@@ -80,3 +80,6 @@ We have already prepare a python file to parse the log file to count the unique 
 python util/parse_flips <log.txt>
 ```
 
+
+### Acknowledgments
+This code is built based on [GPUHammer](https://github.com/sith-lab/gpuhammer.git) 
