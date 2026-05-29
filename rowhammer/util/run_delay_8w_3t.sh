@@ -12,14 +12,14 @@ round=1            # No. of round per tREFI, each round hammers <num_agg> rows
 min_delay=1000         # Minimum delay to test
 max_delay=500       # Maximum delay to test
 
-num_rows=64169      # Number of rows in the row_set (line number - 1)
+num_rows=31402      # Number of rows in the row_set (line number - 1)
 # num_rows=61437      
 rowid=13371           # Id of a row to test the delays, can be arbitrary
 iterations=10000
 
 # Memory Properties
 addr_step=256           # Set to be the <step> parameter used in finding conf_set/row_set
-mem_size=50465865728    # Bytes of memory allocated for hammering (recommend: size of memory - 1GB)
+mem_size=24696061952    # Bytes of memory allocated for hammering (recommend: size of memory - 1GB)
 # mem_size=48318382080
 
 # Parse command line arguments

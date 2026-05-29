@@ -94,9 +94,9 @@ parser.add_argument('--pattern_iteration', type=int, default=1,
                     help="Number of iterations to repeat for each hammering pattern.")
 
 # Device parameters
-parser.add_argument('--mem_size', type=int, default=50465865728, 
+parser.add_argument('--mem_size', type=int, default=24696061952,
                     help="Size of allocatable GPU memory in bytes.")
-parser.add_argument('--num_rows', type=int, default=64169,
+parser.add_argument('--num_rows', type=int, default=31402,
                     help="Number of rows in each bank.")
 parser.add_argument('--addr_step', type=int, default=256,
                     help="Stride between addresses in the row set file. \

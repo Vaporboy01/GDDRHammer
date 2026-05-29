@@ -239,13 +239,11 @@ uint64_t toNS(uint64_t time)
   /* System variable that should be constant in a run. */
   static long double clock_rate = []()
   {
-    struct cudaDeviceProp device_prop;
-    cudaGetDeviceProperties(&device_prop, 0);
+    int clock_rate_khz;
+    cudaDeviceGetAttribute(&clock_rate_khz, cudaDevAttrClockRate, 0);
     std::cout << "Stable Max Clock Rate: "
-              << ((long double)(device_prop.clockRate)) * 1000 << '\n';
-    // std::cout << "Using Current Clock Rate: " << ((long double)(val)) <<
-    // '\n';
-    return ((long double)(device_prop.clockRate)) * 1000;
+              << ((long double)(clock_rate_khz)) * 1000 << '\n';
+    return ((long double)(clock_rate_khz)) * 1000;
   }();
 
   // TODO: Later we might need dynamic clockRate for attack./
