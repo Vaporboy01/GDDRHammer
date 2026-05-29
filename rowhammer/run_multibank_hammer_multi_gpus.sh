@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HAMMER_ROOT="${HAMMER_ROOT:-$SCRIPT_DIR}"
 export HAMMER_ROOT
 
-export CUDA_VISIBLE_DEVICES=7
+export CUDA_VISIBLE_DEVICES=0
 
 # Accept an optional comma-separated GPU list as first arg or from CUDA_VISIBLE_DEVICES
 # Usage: ./run_multibank_hammer_multi_gpus.sh 0,1,2,3

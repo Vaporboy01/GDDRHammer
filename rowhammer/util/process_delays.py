@@ -6,9 +6,10 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+# Defaults for A6000 (tREFI=1407ns, 10000 iters)
 MIN_NS_DEFAULT = 14_000_000
 MAX_NS_DEFAULT = 15_000_000
-TOLERANCE_NS = 120_000  # allow small fluctuations within ~0.12 ms
+TOLERANCE_NS = 120_000
 TARGET_NS = 14_070_000
 
 
@@ -102,15 +103,14 @@ def parse_meta_from_name(name: str) -> Tuple[int, str, int]:
     return gpu, bank, num_agg
 
 
-def compute_stable_value(times: List[int]) -> int:
+def compute_stable_value(times: List[int], min_ns: int, max_ns: int, target_ns: int, delay_offset: int) -> int:
     if not times:
         raise ValueError("Empty time list")
-    idx = find_stable_delay_index(times, MIN_NS_DEFAULT, MAX_NS_DEFAULT)
+    idx = find_stable_delay_index(times, min_ns, max_ns)
     print(f"Stable index found at: {idx}")
     if idx < 0:
-        idx = pick_closest_to_target(times, TARGET_NS)
-    # kernel scanned [2000, 4000), so index maps to delay value by +2000
-    stable_value = idx + 1000
+        idx = pick_closest_to_target(times, target_ns)
+    stable_value = idx + delay_offset
     return int(stable_value)
 
 
@@ -131,7 +131,16 @@ def main():
     parser = argparse.ArgumentParser(description="Process delay files and output CSV.")
     parser.add_argument("input_dir", type=str, help="Directory containing delay* files (e.g., results/fig10)")
     parser.add_argument("-o", "--out", type=str, default="results/delay/delay.csv", help="Output CSV path")
+    parser.add_argument("--trefi", type=int, default=1407, help="tREFI in nanoseconds (default: 1407 for A6000)")
+    parser.add_argument("--iters", type=int, default=10000, help="Number of hammer iterations used in delay sweep (default: 10000)")
+    parser.add_argument("--delay-offset", type=int, default=1000, help="min_delay used in sweep; index maps to delay by +offset (default: 1000)")
     args = parser.parse_args()
+
+    target_ns = args.trefi * args.iters
+    tolerance = target_ns * 0.01  # 1%% tolerance
+    min_ns = int(target_ns - tolerance)
+    max_ns = int(target_ns + tolerance)
+    print(f"tREFI={args.trefi} ns, iters={args.iters}, target={target_ns:,} ns, search range=[{min_ns:,}, {max_ns:,}]")
 
     in_dir = Path(args.input_dir).resolve()
     if not in_dir.is_dir():
@@ -154,7 +163,7 @@ def main():
         if not times:
             # skip empty files
             continue
-        delay_value = compute_stable_value(times)
+        delay_value = compute_stable_value(times, min_ns, max_ns, target_ns, args.delay_offset)
         # print(f"Parsed file {fp.name}: gpu={gpu}, bank={bank}, num_agg={num_agg}, delay={delay_value}")
         rows.append((gpu, bank, num_agg, delay_value))
 
